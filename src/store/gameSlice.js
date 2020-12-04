@@ -13,15 +13,15 @@ export const slice = createSlice({
   reducers: {
     // let's add a reducer that sets the game id
     setId: (state, action) => {
-    state.id = action.payload;
+      state.id = action.payload;
     },
     // let's add a reducer that sets an error message
     setIdError: (state, action) => {
-    state.idError = action.payload;
+      state.idError = action.payload;
     },
     // let's add a reducer that sets a loading state
     setIdLoading: (state, action) => {
-    state.idLoading = action.payload;
+      state.idLoading = action.payload;
     },
   },
 });
@@ -37,24 +37,29 @@ export const createGame = () => {
     dispatch(setIdLoading(true));
     dispatch(setIdError(""));
     dispatch(setId(""));
+
     try {
       // let's generate a new game id
-        const gameId = generateGameId();
+      const gameId = generateGameId();
 
-        // let's call our insert game netlify function
-        const res = await fetch(`/.netlify/functions/insertGame/${gameId}`, {
+      // let's call our insert game netlify function
+      const res = await fetch(`/.netlify/functions/insertGame/${gameId}`, {
         method: "POST",
         body: JSON.stringify({ state: "initialized" }),
-        });
-        if (!res.ok) {
-            throw Error(res.statusText);
-        }
+      });
+      if (!res.ok) {
+        throw Error(res.statusText);
+      }
+
       // let's set the game id
-        const resJson = await res.json();
-        dispatch(setId(resJson.documentId));
+      const resJson = await res.json();
+      dispatch(setId(resJson.documentId));
     } catch (e) {
-        dispatch(setIdError(e.message));
+      // let's set the id error if there is one
+      dispatch(setIdError(e.message));
     }
+
+    // let's set the id state to not loading
     dispatch(setIdLoading(false));
   };
 };
